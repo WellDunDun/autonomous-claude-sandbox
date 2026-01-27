@@ -25,6 +25,8 @@ Route to the appropriate workflow based on the request:
 - Set up new Cloudflare Sandbox deployment → `Workflows/Setup.md`
 - Deploy/update existing deployment → `Workflows/Deploy.md`
 - Troubleshoot issues → `Workflows/Troubleshoot.md`
+- Upgrade SDK or dependencies → `Workflows/Upgrade.md`
+- Monitor deployment health → `Workflows/Monitor.md`
 
 ---
 
@@ -120,6 +122,102 @@ curl -X POST https://YOUR-WORKER.workers.dev/execute \
   -H "Content-Type: application/json" \
   -d '{"task": "What is 2 + 2?"}'
 ```
+
+---
+
+## API Reference
+
+Formal specification of the Cloudflare Sandbox Worker API endpoints.
+
+### GET /health
+
+Health check endpoint. No authentication required.
+
+**Request:**
+```bash
+curl https://YOUR-WORKER.workers.dev/health
+```
+
+**Response (200 OK):**
+```json
+{
+  "status": "healthy",
+  "platform": "cloudflare_sandboxes",
+  "auth_method": "claude_subscription_setup_token"
+}
+```
+
+### POST /execute
+
+Execute a Claude Code task in an isolated sandbox container.
+
+**Headers:**
+| Header | Required | Description |
+|--------|----------|-------------|
+| `Authorization` | Yes | `Bearer <SERVER_AUTH_TOKEN>` |
+| `Content-Type` | Yes | `application/json` |
+
+**Request Body:**
+```json
+{
+  "task": "string",      // Required: Task description for Claude
+  "timeout": 300000      // Optional: Timeout in ms (default: 300000)
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "taskId": "uuid",
+  "success": true,
+  "stdout": "Task output...",
+  "stderr": "",
+  "output": "Task output..."
+}
+```
+
+**Error Responses:**
+
+| Code | Cause | Response |
+|------|-------|----------|
+| 400 | Missing task | `{"error": "Task is required"}` |
+| 401 | Invalid token | `{"error": "Unauthorized"}` |
+| 500 | Execution failed | `{"error": "Task execution failed", "details": "..."}` |
+
+**Example:**
+```bash
+curl -X POST https://YOUR-WORKER.workers.dev/execute \
+  -H "Authorization: Bearer YOUR_SERVER_AUTH_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"task": "What is 2 + 2?", "timeout": 60000}'
+```
+
+### GET /tasks/:taskId/result
+
+Retrieve stored task results from R2.
+
+**Headers:**
+| Header | Required | Description |
+|--------|----------|-------------|
+| `Authorization` | Yes | `Bearer <SERVER_AUTH_TOKEN>` |
+
+**Response (200 OK):**
+```json
+{
+  "taskId": "uuid",
+  "success": true,
+  "stdout": "...",
+  "stderr": "...",
+  "timestamp": "2024-01-28T00:00:00.000Z"
+}
+```
+
+**Error Responses:**
+
+| Code | Cause | Response |
+|------|-------|----------|
+| 401 | Invalid token | `{"error": "Unauthorized"}` |
+| 404 | Task not found | `{"error": "Task result not found"}` |
 
 ---
 
@@ -228,6 +326,70 @@ EXPOSE 3000
 | containers:write | Missing permission | Re-run `wrangler login` |
 | root privileges | Wrong flag | Use `--permission-mode acceptEdits` |
 | 401 from Anthropic | Bad OAuth token | Re-run `claude setup-token` |
+
+---
+
+## Security Considerations
+
+### Token Management
+
+**SERVER_AUTH_TOKEN:**
+- Generate with `./Tools/generate-token.sh` (256-bit entropy)
+- Store securely - this grants full API access
+- Rotate periodically (recommended: quarterly)
+- Never commit to version control
+
+**CLAUDE_CODE_OAUTH_TOKEN:**
+- Generated via `claude setup-token`
+- Tied to your Claude MAX subscription
+- Expires and needs periodic refresh
+- Set as Wrangler secret, never in code
+
+### Token Rotation
+
+```bash
+# Rotate SERVER_AUTH_TOKEN
+./Tools/generate-token.sh
+npx wrangler secret put SERVER_AUTH_TOKEN
+# Update all clients with new token
+
+# Refresh CLAUDE_CODE_OAUTH_TOKEN
+claude setup-token
+npx wrangler secret put CLAUDE_CODE_OAUTH_TOKEN
+npm run deploy
+```
+
+### Network Security
+
+- All traffic is HTTPS (TLS 1.3)
+- Cloudflare provides DDoS protection
+- Worker validates auth before any sandbox access
+- Containers are isolated per-task
+
+### Data Handling
+
+| Data Type | Storage | Retention |
+|-----------|---------|-----------|
+| Task input | Memory only | Request duration |
+| Task output | R2 bucket | Until deleted |
+| OAuth tokens | Wrangler secrets | Encrypted at rest |
+| Logs | Cloudflare | 7 days default |
+
+### Container Isolation
+
+Each task runs in an isolated container:
+- Fresh environment per execution
+- No persistent state between tasks
+- Resource limits enforced
+- No network access to other containers
+
+### Best Practices
+
+1. **Least Privilege:** Only grant necessary permissions
+2. **Token Rotation:** Rotate tokens quarterly
+3. **Monitoring:** Watch for unusual auth failures
+4. **Audit Logs:** Review Cloudflare logs regularly
+5. **R2 Cleanup:** Delete old task results periodically
 
 ---
 

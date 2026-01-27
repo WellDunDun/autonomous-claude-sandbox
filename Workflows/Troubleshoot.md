@@ -2,6 +2,28 @@
 
 Diagnose and fix common Cloudflare Sandbox issues.
 
+## Quick Diagnostics
+
+Before diving into specific errors, gather full diagnostics:
+
+```bash
+./Tools/diagnose.sh . | jq .
+```
+
+This captures system info, versions, container status, and recent deployments.
+
+### Validate Configuration
+
+Many issues stem from configuration problems:
+
+```bash
+./Tools/validate-config.sh . | jq .
+```
+
+Check the `issues` array for problems to fix.
+
+---
+
 ## Diagnostic Commands
 
 ### Check Deployment Status
@@ -46,6 +68,8 @@ curl https://YOUR-WORKER.workers.dev/health
    ```
 3. Redeploy: `npm run deploy`
 
+> **Tip:** Run `./Tools/validate-config.sh` to check for Dockerfile issues automatically.
+
 ---
 
 ### "containers:write" Scope Error
@@ -60,6 +84,8 @@ npx wrangler login
 ```
 
 When browser opens, ensure `containers:write` is checked.
+
+> **Tip:** The `diagnose.sh` tool captures wrangler authentication status.
 
 ---
 
@@ -81,6 +107,8 @@ When browser opens, ensure `containers:write` is checked.
    ```
 3. Redeploy: `npm run deploy`
 
+> **Tip:** Run `./Tools/validate-config.sh` to check for this issue automatically.
+
 ---
 
 ### 401 Unauthorized from Anthropic
@@ -101,6 +129,8 @@ npx wrangler secret put CLAUDE_CODE_OAUTH_TOKEN
 npm run deploy
 ```
 
+> **Tip:** The `diagnose.sh` tool captures deployment and authentication status.
+
 ---
 
 ### 401 Unauthorized from Worker
@@ -113,9 +143,11 @@ npm run deploy
 1. Verify you're using the correct token in the Authorization header
 2. If token is lost, generate and set a new one:
    ```bash
-   openssl rand -hex 32
+   ./Tools/generate-token.sh
    npx wrangler secret put SERVER_AUTH_TOKEN
    ```
+
+> **Tip:** Use `./Tools/test-deployment.sh <url> <token>` to verify your token works.
 
 ---
 
@@ -134,6 +166,8 @@ npm run deploy
    ```dockerfile
    ENV COMMAND_TIMEOUT_MS=600000
    ```
+
+> **Tip:** Run `./Tools/validate-config.sh` to check timeout configuration.
 
 ---
 
@@ -161,6 +195,8 @@ npm run deploy
    export { Sandbox } from "@cloudflare/sandbox";
    ```
 
+> **Tip:** Run `./Tools/validate-config.sh` to check for binding mismatches automatically.
+
 ---
 
 ### getSandbox is Not a Function
@@ -179,6 +215,8 @@ npm run deploy
    "@cloudflare/sandbox": "^0.7.0"
    ```
 3. Reinstall: `npm install`
+
+> **Tip:** Run `./Tools/validate-config.sh` to verify package versions.
 
 ---
 

@@ -2,6 +2,19 @@
 
 Complete setup guide for deploying Claude Code on Cloudflare Sandboxes.
 
+## Step 0: Verify Prerequisites
+
+Run the prerequisites check first:
+
+```bash
+./Tools/check-prerequisites.sh | jq .
+```
+
+If `success: false`, address the issues listed before continuing. Common fixes:
+- Docker not running: Start Docker Desktop
+- Wrangler not authenticated: Run `npx wrangler login`
+- Node version too low: Upgrade to Node 18+
+
 ## Prerequisites Check
 
 Before starting, verify:
@@ -127,6 +140,16 @@ Update these values:
 }
 ```
 
+### Validate Configuration
+
+Before deploying, validate your configuration:
+
+```bash
+./Tools/validate-config.sh . | jq .
+```
+
+Fix any issues reported before proceeding.
+
 ## Step 6: Verify Dockerfile
 
 Ensure your Dockerfile uses the correct base image:
@@ -185,6 +208,19 @@ Expected response:
 }
 ```
 
+### Automated Testing
+
+For comprehensive testing, use the test script:
+
+```bash
+./Tools/test-deployment.sh https://YOUR-WORKER.workers.dev YOUR_TOKEN | jq .
+```
+
+This runs:
+- Health check
+- Auth verification
+- Task execution test
+
 ## Troubleshooting
 
 ### Error 1101
@@ -213,6 +249,16 @@ claude setup-token
 npx wrangler secret put CLAUDE_CODE_OAUTH_TOKEN
 npm run deploy
 ```
+
+### Gather Diagnostics
+
+If issues persist, gather full diagnostics:
+
+```bash
+./Tools/diagnose.sh . | jq .
+```
+
+Share this output when seeking help.
 
 ## Monitoring
 
