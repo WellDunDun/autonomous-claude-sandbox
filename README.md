@@ -48,6 +48,27 @@ Say any of these to activate the skill:
 | `Deploy.md` | Deploy or update existing deployment |
 | `Troubleshoot.md` | Diagnose and fix common issues |
 
+## Deterministic Tools
+
+Scripts that output JSON for AI agent consumption:
+
+| Tool | Purpose |
+|------|---------|
+| `check-prerequisites.sh` | Verify Docker, Node, wrangler auth |
+| `validate-config.sh` | Check Dockerfile, wrangler.jsonc, index.ts |
+| `test-deployment.sh` | Health check + test task execution |
+| `diagnose.sh` | Gather all troubleshooting info |
+| `generate-token.sh` | Generate secure auth token |
+
+```bash
+# Example: Check if ready to deploy
+./Tools/check-prerequisites.sh | jq .success
+# Returns: true or false
+
+# Example: Test a deployment
+./Tools/test-deployment.sh https://my-worker.workers.dev my-token | jq .
+```
+
 ## Prerequisites
 
 - Cloudflare account with Workers Paid plan ($5/month)

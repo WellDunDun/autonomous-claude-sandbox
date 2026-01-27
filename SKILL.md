@@ -28,6 +28,51 @@ Route to the appropriate workflow based on the request:
 
 ---
 
+## Deterministic Tools
+
+These scripts output JSON and use proper exit codes for AI agent consumption.
+
+| Tool | Purpose | Usage |
+|------|---------|-------|
+| `Tools/check-prerequisites.sh` | Verify all requirements | `./Tools/check-prerequisites.sh` |
+| `Tools/validate-config.sh` | Check project config | `./Tools/validate-config.sh [project-dir]` |
+| `Tools/test-deployment.sh` | Test live deployment | `./Tools/test-deployment.sh <url> [token]` |
+| `Tools/diagnose.sh` | Gather troubleshooting info | `./Tools/diagnose.sh [project-dir]` |
+| `Tools/generate-token.sh` | Generate auth token | `./Tools/generate-token.sh` |
+
+### Example: Check Prerequisites
+
+```bash
+./Tools/check-prerequisites.sh | jq .
+```
+
+Output:
+```json
+{
+  "success": true,
+  "checks": {
+    "node": { "installed": true, "version": "20.10.0", "meets_requirement": true },
+    "docker": { "installed": true, "running": true },
+    "wrangler": { "installed": true, "authenticated": true }
+  },
+  "issues": []
+}
+```
+
+### Example: Validate Config
+
+```bash
+./Tools/validate-config.sh /path/to/project | jq .
+```
+
+### Example: Test Deployment
+
+```bash
+./Tools/test-deployment.sh https://my-worker.workers.dev my-auth-token | jq .
+```
+
+---
+
 ## Quick Start
 
 ### Prerequisites
