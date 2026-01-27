@@ -23,6 +23,10 @@ git clone https://github.com/WellDunDun/cloudflare-sandbox-skill.git ~/.cursor/s
 git clone https://github.com/WellDunDun/cloudflare-sandbox-skill.git ~/.agent/skills/CloudflareSandbox
 ```
 
+## Architecture
+
+See [architecture.md](./architecture.md) for detailed technical diagrams showing the request flow from client through Worker, Durable Object, and Sandbox Container.
+
 ## What This Skill Does
 
 This skill guides AI agents through deploying Claude Code on Cloudflare's Sandbox container infrastructure. It enables:
