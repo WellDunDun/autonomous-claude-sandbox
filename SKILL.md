@@ -11,22 +11,31 @@ Deploy Claude Code on Cloudflare Sandbox containers for autonomous AI task execu
 
 Activate when you see these patterns:
 
+**Setup & Deployment:**
 - "Setup autonomous claude sandbox"
 - "Deploy claude on cloudflare"
-- "Run claude code autonomously"
 - "Set up Claude Code on Cloudflare containers"
-- "Autonomous AI task execution"
-- "Claude sandbox deployment"
+
+**Task Execution:**
+- "Execute task in sandbox"
+- "Run this in the sandbox"
+- "Delegate to sandbox"
+- "Send to autonomous claude"
+- "Run claude code autonomously"
 
 ## Workflow Routing
 
 Route to the appropriate workflow based on the request:
 
+**Setup & Operations:**
 - Set up new Cloudflare Sandbox deployment → `Workflows/Setup.md`
 - Deploy/update existing deployment → `Workflows/Deploy.md`
 - Troubleshoot issues → `Workflows/Troubleshoot.md`
 - Upgrade SDK or dependencies → `Workflows/Upgrade.md`
 - Monitor deployment health → `Workflows/Monitor.md`
+
+**Task Execution:**
+- Execute a task in the sandbox → `Workflows/Execute.md`
 
 ---
 
@@ -36,11 +45,28 @@ These scripts output JSON and use proper exit codes for AI agent consumption.
 
 | Tool | Purpose | Usage |
 |------|---------|-------|
+| `Tools/execute-task.sh` | Execute task in sandbox | `./Tools/execute-task.sh <url> <token> <task>` |
 | `Tools/check-prerequisites.sh` | Verify all requirements | `./Tools/check-prerequisites.sh` |
 | `Tools/validate-config.sh` | Check project config | `./Tools/validate-config.sh [project-dir]` |
 | `Tools/test-deployment.sh` | Test live deployment | `./Tools/test-deployment.sh <url> [token]` |
 | `Tools/diagnose.sh` | Gather troubleshooting info | `./Tools/diagnose.sh [project-dir]` |
 | `Tools/generate-token.sh` | Generate auth token | `./Tools/generate-token.sh` |
+
+### Example: Execute Task
+
+```bash
+./Tools/execute-task.sh https://my-worker.workers.dev my-auth-token "Write a hello world script" | jq .
+```
+
+Output:
+```json
+{
+  "success": true,
+  "taskId": "a1b2c3d4-...",
+  "stdout": "Created hello.py with print('Hello, World!')",
+  "execution_time_ms": 8500
+}
+```
 
 ### Example: Check Prerequisites
 

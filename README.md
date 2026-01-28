@@ -29,28 +29,36 @@ See [architecture.md](./architecture.md) for detailed technical diagrams showing
 
 ## What This Skill Does
 
-This skill guides AI agents through deploying Claude Code on Cloudflare's Sandbox container infrastructure. It enables:
+This skill enables AI agents to deploy AND execute tasks on Cloudflare's Sandbox container infrastructure:
 
-- **Isolated Execution** - Run Claude Code in secure, isolated containers
-- **API Access** - Execute AI coding tasks via simple HTTP endpoints
+- **Setup & Deploy** - Guide agents through deploying Claude Code on Cloudflare
+- **Task Execution** - Send tasks to the sandbox for isolated execution
+- **Isolated Containers** - Each task runs in a secure, ephemeral environment
 - **Auto-scaling** - Cloudflare manages container lifecycle
 
 ## Trigger Phrases
 
-Say any of these to activate the skill:
-
-- "Setup cloudflare sandbox"
-- "Deploy claude sandbox"
-- "Create sandbox worker"
+**Setup & Deployment:**
+- "Setup autonomous claude sandbox"
+- "Deploy claude on cloudflare"
 - "Set up Claude Code on Cloudflare"
+
+**Task Execution:**
+- "Execute task in sandbox"
+- "Run this in the sandbox"
+- "Delegate to sandbox"
+- "Send to autonomous claude"
 
 ## Workflows
 
 | Workflow | Description |
 |----------|-------------|
+| `Execute.md` | Send tasks to sandbox for execution |
 | `Setup.md` | Complete setup from scratch |
 | `Deploy.md` | Deploy or update existing deployment |
 | `Troubleshoot.md` | Diagnose and fix common issues |
+| `Upgrade.md` | Upgrade SDK or dependencies |
+| `Monitor.md` | Monitor deployment health |
 
 ## Deterministic Tools
 
@@ -58,6 +66,7 @@ Scripts that output JSON for AI agent consumption:
 
 | Tool | Purpose |
 |------|---------|
+| `execute-task.sh` | Execute a task in the sandbox |
 | `check-prerequisites.sh` | Verify Docker, Node, wrangler auth |
 | `validate-config.sh` | Check Dockerfile, wrangler.jsonc, index.ts |
 | `test-deployment.sh` | Health check + test task execution |
@@ -65,11 +74,13 @@ Scripts that output JSON for AI agent consumption:
 | `generate-token.sh` | Generate secure auth token |
 
 ```bash
-# Example: Check if ready to deploy
-./Tools/check-prerequisites.sh | jq .success
-# Returns: true or false
+# Execute a task in the sandbox
+./Tools/execute-task.sh https://my-worker.workers.dev my-token "Write a hello world script" | jq .
 
-# Example: Test a deployment
+# Check if ready to deploy
+./Tools/check-prerequisites.sh | jq .success
+
+# Test a deployment
 ./Tools/test-deployment.sh https://my-worker.workers.dev my-token | jq .
 ```
 
