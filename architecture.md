@@ -1,4 +1,4 @@
-# Cloudflare Sandbox Architecture
+# Autonomous Claude Sandbox Architecture
 
 Technical architecture diagram showing how Claude Code runs in Cloudflare Sandbox containers.
 

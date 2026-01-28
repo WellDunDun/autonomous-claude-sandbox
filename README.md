@@ -1,4 +1,4 @@
-# Cloudflare Sandbox Skill
+# Autonomous Claude Sandbox Skill
 
 Deploy Claude Code on Cloudflare Sandbox containers for autonomous AI task execution.
 
@@ -7,7 +7,7 @@ Deploy Claude Code on Cloudflare Sandbox containers for autonomous AI task execu
 Install this skill using the [Agent Skills CLI](https://skills.sh):
 
 ```bash
-npx skills add WellDunDun/cloudflare-sandbox-skill
+npx skills add WellDunDun/autonomous-claude-sandbox
 ```
 
 Or manually add to your agent's skills directory:

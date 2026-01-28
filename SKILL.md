@@ -1,9 +1,9 @@
 ---
-name: cloudflare-sandbox
+name: autonomous-claude-sandbox
 description: Deploy Claude Code on Cloudflare Sandboxes. Run autonomous AI coding tasks in isolated containers via a simple API.
 ---
 
-# Cloudflare Sandbox Skill
+# Autonomous Claude Sandbox Skill
 
 Deploy Claude Code on Cloudflare Sandbox containers for autonomous AI task execution.
 
@@ -11,12 +11,12 @@ Deploy Claude Code on Cloudflare Sandbox containers for autonomous AI task execu
 
 Activate when you see these patterns:
 
-- "Setup cloudflare sandbox"
-- "Deploy claude sandbox"
-- "Create sandbox worker"
-- "Set up Claude Code on Cloudflare"
-- "Deploy Claude on containers"
+- "Setup autonomous claude sandbox"
+- "Deploy claude on cloudflare"
+- "Run claude code autonomously"
+- "Set up Claude Code on Cloudflare containers"
 - "Autonomous AI task execution"
+- "Claude sandbox deployment"
 
 ## Workflow Routing
 
