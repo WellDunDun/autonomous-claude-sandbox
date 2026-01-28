@@ -24,8 +24,8 @@ EOF
     exit 1
 fi
 
-# Record start time
-START_TIME=$(date +%s%3N 2>/dev/null || echo "0")
+# Record start time (use seconds - %N not supported on macOS)
+START_TIME=$(date +%s)
 
 # Execute the task
 RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "${WORKER_URL}/execute" \
@@ -38,13 +38,10 @@ RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "${WORKER_URL}/execute" \
 HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
 BODY=$(echo "$RESPONSE" | sed '$d')
 
-# Calculate execution time
-END_TIME=$(date +%s%3N 2>/dev/null || echo "0")
-if [[ "$START_TIME" != "0" ]] && [[ "$END_TIME" != "0" ]]; then
-    EXEC_TIME=$((END_TIME - START_TIME))
-else
-    EXEC_TIME=0
-fi
+# Calculate execution time in seconds
+END_TIME=$(date +%s)
+EXEC_TIME_SEC=$((END_TIME - START_TIME))
+EXEC_TIME=$((EXEC_TIME_SEC * 1000))
 
 # Handle response based on status code
 case "$HTTP_CODE" in
